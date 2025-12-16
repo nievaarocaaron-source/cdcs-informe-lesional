@@ -23,7 +23,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Generar PDF
-        run: python scripts/make_report.py "data/REGISTRO LESIONAL.xlsx" "reports/informe_${{ github.run_number }}.pdf"
+        run: python scripts/make_report_PRO.py "data/REGISTRO LESIONAL.xlsx" "reports/informe_${{ github.run_number }}.pdf"
 
       - name: Subir PDF como descarga
         uses: actions/upload-artifact@v4
