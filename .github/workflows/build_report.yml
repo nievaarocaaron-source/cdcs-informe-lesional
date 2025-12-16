@@ -1,17 +1,21 @@
 name: Generar informe lesional (PDF)
 
 on:
-  push:
-    paths:
-      - "data/**.xlsx"
-      - "scripts/**.py"
-      - "requirements.txt"
-      - "assets/**"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Versión del informe"
+        required: true
+        default: "PRO"
+        type: choice
+        options:
+          - PRO
+          - CLASSIC
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,9 +27,16 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Generar PDF
-        run: python scripts/make_report.py "data/REGISTRO LESIONAL.xlsx" "reports/informe_${{ github.run_number }}.pdf"
+        run: |
+          if [ "${{ github.event.inputs.version }}" = "PRO" ]; then
+            echo "Ejecutando versión PRO"
+            python scripts/make_report_PRO.py "data/REGISTRO LESIONAL.xlsx" "reports/informe_PRO_${{ github.run_number }}.pdf"
+          else
+            echo "Ejecutando versión CLASSIC"
+            python scripts/make_report.py "data/REGISTRO LESIONAL.xlsx" "reports/informe_CLASSIC_${{ github.run_number }}.pdf"
+          fi
 
-      - name: Subir PDF como descarga
+      - name: Subir PDF como artifact
         uses: actions/upload-artifact@v4
         with:
           name: informe-lesional
